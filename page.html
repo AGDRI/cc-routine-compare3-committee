@@ -426,14 +426,21 @@
     const pct = v => (typeof v === 'number' ? (v > 0 ? '+' : '') + v + '%' : '—');
     const span = h => h ? pct(h.bear) + ' 〜 ' + pct(h.bull) + '（<b>' + pct(h.base) + '</b>）' : '—';
     const bl = con.baseline;
-    const baselineHtml = bl
-      ? '<div class="basis"><b>騰落率の基準</b>' + escapeHtml(bl.asOf || '') + ' 時点' +
-          (bl.source ? '（' + escapeHtml(bl.source) + '）' : '') +
-          (bl.note ? ' — ' + escapeHtml(bl.note) : '') +
-          (bl.prices ? '<div class="basis-prices">' + Object.keys(bl.prices).map(k =>
-              escapeHtml(candidateName(k)) + ' ' + fmtNum(bl.prices[k]) + '円').join('　/　') + '</div>' : '') +
-        '</div>'
-      : '';
+    let baselineHtml = '';
+    if (bl) {
+      // 銘柄ごとの入れ子（新形式）と、単一 prices マップ（旧形式）の両対応
+      const rows = Object.keys(bl).filter(k => k !== 'note' && bl[k] && typeof bl[k] === 'object' && 'price' in bl[k])
+        .map(k => escapeHtml(candidateName(k)) + ' <b>' + fmtNum(bl[k].price) + '円</b>' +
+          (bl[k].asOf ? '（' + escapeHtml(bl[k].asOf) + (bl[k].confirmed === false ? ' 以降未確認' : '') + '）' : ''));
+      const legacy = (!rows.length && bl.prices) ? Object.keys(bl.prices).map(k =>
+        escapeHtml(candidateName(k)) + ' <b>' + fmtNum(bl.prices[k]) + '円</b>') : [];
+      const list = rows.length ? rows : legacy;
+      baselineHtml = '<div class="basis"><b>騰落率の基準</b>' +
+        (list.length ? '' : '基準株価が記録されていません') +
+        (bl.note ? escapeHtml(bl.note) : '') +
+        (list.length ? '<div class="basis-prices">' + list.join('　/　') + '</div>' : '') +
+      '</div>';
+    }
     const basisHtml = con.rankingBasis
       ? '<div class="basis"><b>順位の判断基準</b>' + escapeHtml(con.rankingBasis) + '</div>' : '';
     const rankBadges = x => {
