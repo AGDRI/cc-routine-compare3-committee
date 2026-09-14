@@ -1,0 +1,561 @@
+<title>合議制委員会</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #F6F8F7;
+    --surface: #FFFFFF;
+    --surface-2: #EDF1F0;
+    --ink: #14181A;
+    --ink-secondary: #4B565B;
+    --ink-muted: #7C8888;
+    --border: #DCE3E1;
+    --border-strong: #C3CDCB;
+    /* scenario-polarity colors (chart / outlook only, not tied to any person) */
+    --bull: #0A8F86;
+    --bear: #B5651D;
+    /* member identity colors (categorical, CVD-checked) — assigned by roster order */
+    --p-1: #2a78d6;
+    --p-2: #eb6834;
+    --p-3: #1baf7a;
+    --p-4: #eda100;
+    --p-5: #e87ba4;
+    --macro: var(--p-1);
+    --macro-soft: #E7EEFA;
+    --stance-add: var(--bull);
+    --stance-hold: var(--macro);
+    --stance-trim: var(--p-4);
+    --stance-exit: var(--bear);
+    --shadow: 0 1px 2px rgba(20,24,26,0.07), 0 10px 28px rgba(20,24,26,0.06);
+    --font-display: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+    --font-body: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B0F10;
+      --surface: #14191B;
+      --surface-2: #1C2224;
+      --ink: #EDEFEE;
+      --ink-secondary: #A7B0AF;
+      --ink-muted: #7E8A89;
+      --border: #2A3234;
+      --border-strong: #39433F;
+      --bull: #26A099;
+      --bear: #CC7233;
+      --p-1: #3987e5;
+      --p-2: #d95926;
+      --p-3: #199e70;
+      --p-4: #c98500;
+      --p-5: #d55181;
+      --macro-soft: #1D2A3D;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 10px 28px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B0F10;
+    --surface: #14191B;
+    --surface-2: #1C2224;
+    --ink: #EDEFEE;
+    --ink-secondary: #A7B0AF;
+    --ink-muted: #7E8A89;
+    --border: #2A3234;
+    --border-strong: #39433F;
+    --bull: #26A099;
+    --bear: #CC7233;
+    --p-1: #3987e5;
+    --p-2: #d95926;
+    --p-3: #199e70;
+    --p-4: #c98500;
+    --p-5: #d55181;
+    --macro-soft: #1D2A3D;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 10px 28px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-body); line-height: 1.75; }
+  .page { max-width: 760px; margin: 0 auto; padding: 40px 20px 64px; display: flex; flex-direction: column; gap: 28px; }
+
+  .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .masthead-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); }
+  .masthead h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 5vw, 34px); margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+  .masthead-question { font-size: 15px; color: var(--ink-secondary); max-width: 60ch; }
+  .ticker-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .ticker-chip { display: flex; align-items: baseline; gap: 6px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px; padding: 5px 10px; font-size: 12.5px; }
+  .ticker-chip .code { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
+  .ticker-chip .name { color: var(--ink-secondary); }
+  .status-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pill { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.04em; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-strong); color: var(--ink-secondary); white-space: nowrap; }
+  .pill.live { color: var(--bull); border-color: var(--bull); background: var(--surface-2); }
+  .pill.done { color: var(--ink-muted); background: var(--surface-2); }
+  .cadence-note { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); }
+
+  .log-heading { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); }
+
+  .premise { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 18px 20px; box-shadow: var(--shadow); }
+  .premise-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--macro); margin-bottom: 8px; display: block; }
+  .premise p { margin: 0; font-size: 14.5px; color: var(--ink-secondary); }
+
+  .chart-section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 20px 20px 12px; box-shadow: var(--shadow); }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+  .chart-title { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .chart-current { font-family: var(--font-mono); font-size: 13px; color: var(--ink-secondary); }
+  .chart-current strong { font-size: 18px; color: var(--ink); }
+  .chart-wrap { position: relative; width: 100%; overflow-x: auto; }
+  svg.prob-chart { width: 100%; height: auto; display: block; }
+  .axis-label { font-family: var(--font-mono); font-size: 10px; fill: var(--ink-muted); }
+  .chart-tooltip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.5; padding: 8px 10px; border-radius: 4px; max-width: 260px; transform: translate(-50%, -100%); box-shadow: var(--shadow); z-index: 5; }
+  .chart-tooltip .tt-round { font-family: var(--font-mono); font-size: 10.5px; opacity: 0.7; margin-bottom: 3px; display: block; }
+  .chart-legend { display: flex; gap: 16px; margin-top: 6px; font-size: 11.5px; color: var(--ink-muted); flex-wrap: wrap; }
+  .chart-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+  .swatch.line { width: 14px; height: 2px; border-radius: 0; }
+
+  .cycles { display: flex; flex-direction: column; gap: 16px; }
+  .cycle-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; box-shadow: var(--shadow); overflow: hidden; animation: rise 0.4s ease both; }
+  @media (prefers-reduced-motion: reduce) { .cycle-card, .round-card { animation: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .cycle-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: var(--surface-2); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
+  .cycle-head .cycle-no { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+  .cycle-head time { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-muted); }
+  .conclusion { padding: 18px; background: var(--macro-soft); border-bottom: 1px solid var(--border); }
+  .conclusion-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+  .stance-badge { font-family: var(--font-mono); font-weight: 700; font-size: 13px; letter-spacing: 0.02em; padding: 6px 12px; border-radius: 999px; color: #fff; white-space: nowrap; flex-shrink: 0; background: var(--ink-muted); }
+  .stance-badge.add { background: var(--stance-add); }
+  .stance-badge.hold { background: var(--stance-hold); }
+  .stance-badge.trim { background: var(--stance-trim); }
+  .stance-badge.exit { background: var(--stance-exit); }
+  .stance-badge.nittobo { background: var(--p-3); }
+  .stance-badge.pillar { background: var(--p-1); }
+  .stance-badge.mec { background: var(--p-2); }
+
+  .ranking { margin: 4px 0 14px; display: flex; flex-direction: column; gap: 8px; }
+  .rank-row { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--border-strong); border-radius: 4px; padding: 10px 13px; }
+  .rank-row.r1 { border-left-color: var(--bull); }
+  .rank-head { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+  .rank-no { font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: var(--ink-muted); }
+  .rank-name { font-family: var(--font-display); font-weight: 700; font-size: 14.5px; }
+  .rank-figs { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-secondary); margin-left: auto; white-space: nowrap; }
+  .rank-figs b { color: var(--ink); }
+  .rank-why { font-size: 12.5px; color: var(--ink-secondary); margin-top: 5px; }
+  .rank-swing { font-size: 11.5px; color: var(--ink-muted); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); }
+  .rank-swing b { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .05em; text-transform: uppercase; margin-right: 5px; }
+  .conclusion-verdict { font-size: 15px; font-weight: 600; color: var(--ink); flex: 1; min-width: 200px; }
+  .outlook-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 4px 0 14px; }
+  .outlook-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid transparent; border-radius: 4px; padding: 10px 12px; }
+  .outlook-card.bull { border-left-color: var(--bull); }
+  .outlook-card.base { border-left-color: var(--macro); }
+  .outlook-card.bear { border-left-color: var(--bear); }
+  .outlook-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); display: block; margin-bottom: 2px; }
+  .outlook-price { font-family: var(--font-mono); font-weight: 700; font-size: 19px; }
+  .outlook-card.bull .outlook-price { color: var(--bull); }
+  .outlook-card.base .outlook-price { color: var(--macro); }
+  .outlook-card.bear .outlook-price { color: var(--bear); }
+  .outlook-rationale { font-size: 11.5px; color: var(--ink-secondary); margin-top: 4px; }
+  .conclusion-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 12px; }
+  .conclusion-col-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px; display: block; }
+  .conclusion-col ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .conclusion-col li { font-size: 13px; color: var(--ink-secondary); padding-left: 14px; position: relative; }
+  .conclusion-col li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; }
+  .conclusion-col.drivers li::before { background: var(--bull); }
+  .conclusion-col.risks li::before { background: var(--bear); }
+  .cycle-rounds { padding: 4px 0; }
+
+  .legacy-toggle { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); cursor: pointer; padding: 10px 0; list-style: none; display: flex; align-items: center; gap: 8px; }
+  .legacy-toggle::-webkit-details-marker { display: none; }
+  .legacy-toggle::before { content: "▸"; font-size: 10px; }
+  details[open] > .legacy-toggle::before { content: "▾"; }
+  details.legacy-section { border: 1px dashed var(--border-strong); border-radius: 4px; padding: 4px 16px; }
+
+  .round-card { background: var(--surface); border: none; border-top: 1px solid var(--border); border-radius: 0; overflow: hidden; }
+  .round-card-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; flex-wrap: wrap; gap: 8px; }
+  .round-card-head .round-no { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+
+  .stmt { padding: 14px 18px; border-left: 3px solid transparent; border-bottom: 1px solid var(--border); }
+  .stmt:last-child { border-bottom: none; }
+  .stmt-label { font-size: 12px; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .stmt-body { font-size: 14.5px; color: var(--ink); }
+
+  .roster { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .roster-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; border-left: 3px solid transparent; padding: 14px 16px; box-shadow: var(--shadow); }
+  .roster-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 7px; }
+  .roster-role { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; display: block; margin: 3px 0 8px; }
+  .roster-bio { font-size: 12.5px; color: var(--ink-secondary); margin: 0; }
+  .roster-quote { font-size: 12px; font-style: italic; color: var(--ink-muted); margin: 10px 0 0; padding-top: 8px; border-top: 1px dashed var(--border); }
+  .roster-facts { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 2px 0 8px; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-muted); }
+  .p-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+  .watch-items { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .watch-items li { font-family: var(--font-mono); font-size: 11px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 3px; padding: 3px 8px; color: var(--ink-secondary); }
+  .round-watch { margin: 0 18px 14px; }
+
+  .guest { margin: 4px 18px 14px; border: 1px dashed var(--border-strong); border-left: 3px solid var(--ink-muted); border-radius: 4px; padding: 13px 15px; background: var(--surface-2); }
+  .guest-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 2px; }
+  .guest-tag { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); background: var(--ink-muted); border-radius: 2px; padding: 2px 6px; }
+  .guest-name { font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+  .guest-title { font-size: 11.5px; color: var(--ink-secondary); }
+  .guest-verdict { font-family: var(--font-mono); font-size: 10.5px; padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; margin-left: auto; }
+  .guest-question { font-size: 11.5px; color: var(--ink-muted); font-style: italic; margin: 4px 0 8px; }
+  .guest-body { font-size: 14px; color: var(--ink); }
+  .guest-sources { margin: 9px 0 0; padding: 8px 0 0; border-top: 1px dashed var(--border); display: flex; flex-wrap: wrap; gap: 5px; list-style: none; }
+  .guest-sources li { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 2px 6px; max-width: 100%; overflow-wrap: anywhere; }
+  .stagnant-flag { font-family: var(--font-mono); font-size: 10.5px; color: var(--bear); border: 1px solid var(--bear); border-radius: 999px; padding: 2px 8px; }
+
+  .audit-list { display: flex; flex-direction: column; gap: 10px; padding: 6px 0 12px; }
+  .audit-row { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 11px 14px; font-size: 12.5px; color: var(--ink-secondary); }
+  .audit-row-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+  .audit-cycle { font-family: var(--font-mono); font-weight: 600; font-size: 12px; color: var(--ink); }
+  .audit-field { margin-top: 3px; }
+  .audit-field b { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); font-weight: 600; margin-right: 6px; }
+  .audit-rule { color: var(--ink); background: var(--macro-soft); border-radius: 3px; padding: 6px 9px; margin-top: 6px; }
+
+  .empty-state { border: 1px dashed var(--border-strong); border-radius: 4px; padding: 28px 20px; text-align: center; color: var(--ink-muted); font-size: 13.5px; }
+  footer { font-size: 11.5px; color: var(--ink-muted); border-top: 1px solid var(--border); padding-top: 14px; }
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <span class="masthead-eyebrow" id="eyebrow">Coverage Desk</span>
+    <h1 id="themeTitle">読み込み中…</h1>
+    <p class="masthead-question" id="subhead"></p>
+    <div class="ticker-row" id="tickerRow"></div>
+    <div class="status-row">
+      <span class="pill" id="cyclePill">CYCLE —</span>
+      <span class="cadence-note" id="cadenceNote"></span>
+    </div>
+  </header>
+
+  <div class="log-heading">Committee Roster</div>
+  <div class="roster" id="roster"></div>
+
+  <section class="premise">
+    <span class="premise-label">設置者の仮説 — 未検証の作業前提</span>
+    <p id="premiseText"></p>
+  </section>
+
+  <section class="chart-section">
+    <div class="chart-head">
+      <span class="chart-title" id="chartTitle">シナリオの推移（サイクルごとの結論）</span>
+      <span class="chart-current" id="chartCurrent">—</span>
+    </div>
+    <div class="chart-wrap">
+      <svg class="prob-chart" id="outlookChart" viewBox="0 0 680 220" preserveAspectRatio="xMidYMid meet" role="img" aria-label="シナリオ推移チャート"></svg>
+      <div class="chart-tooltip" id="chartTooltip" hidden></div>
+    </div>
+    <div class="chart-legend" id="chartLegend"></div>
+  </section>
+
+  <div class="log-heading">Committee Log</div>
+  <div class="cycles" id="cycles">
+    <div class="empty-state" id="cyclesEmpty">初回サイクルの生成を待っています。以後、討議と結論が自動的にこのページへ反映されます。</div>
+  </div>
+
+  <details class="legacy-section" id="auditWrap" hidden>
+    <summary class="legacy-toggle">委員会の自己監査ログ（停滞判定・新規材料・招聘・自己修正）を見る</summary>
+    <div class="audit-list" id="auditList"></div>
+  </details>
+
+  <footer id="footerNote">
+    本ページはAIによる仮想の合議制チームの討議記録であり、特定の行動を推奨するものではありません。内容は思考実験・調査メモとしての利用を目的としています。
+  </footer>
+</div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const PALETTE = ['--p-1', '--p-2', '--p-3', '--p-4', '--p-5'];
+  const OUTLOOK_KEYS = ['bull', 'base', 'bear'];
+
+  let meta = null;
+  let team = {};          // key -> {label, var}
+  let stanceLabels = {};  // key -> label
+  let cycles = [];
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+  function fmtNum(n) { return typeof n === 'number' ? n.toLocaleString('ja-JP') : '—'; }
+  function candidateName(key) {
+    const c = ((meta && meta.candidates) || []).find(x => x.key === key);
+    return c ? (c.name + (c.code ? '（' + c.code + '）' : '')) : key;
+  }
+  function unit() { return (meta && meta.outlookLabels && meta.outlookLabels.unit) || ''; }
+  function olLabel(k) {
+    const d = { bull: '強気', base: 'ベース', bear: '弱気' };
+    return (meta && meta.outlookLabels && meta.outlookLabels[k]) || d[k];
+  }
+  function fmtDay(iso) {
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    return isNaN(d.getTime()) ? iso : d.toLocaleDateString('ja-JP', { month: '2-digit', day: '2-digit', weekday: 'short' });
+  }
+
+  // ---------- header / roster / premise, all driven by state/meta ----------
+  function renderMeta(m) {
+    if (!m) return;
+    meta = m;
+    team = {};
+    stanceLabels = {};
+    (m.stances || []).forEach(s => { stanceLabels[s.key] = s.label; });
+
+    if (m.deskName) $('eyebrow').textContent = m.deskName;
+    if (m.theme) $('themeTitle').textContent = m.theme;
+
+    const members = m.team || [];
+    members.forEach((p, i) => {
+      team[p.key] = { label: p.name + (p.role ? '（' + p.role + '）' : ''), var: PALETTE[i % PALETTE.length] };
+    });
+
+    if (members.length) {
+      $('subhead').textContent = members.map(p => p.role).filter(Boolean).join('・') +
+        '。役職の上下を気にせずフラットに議論し、5人の知識で決着がつかない論点では外部の専門家を招聘する。結論が動かない状態が続けば、自ら議論のやり方を書き換える。';
+      $('roster').innerHTML = members.map((p, i) => {
+        const v = PALETTE[i % PALETTE.length];
+        const facts = [p.age ? p.age + '歳' : '', p.background, p.mbti].filter(Boolean).join(' ・ ');
+        return '<div class="roster-card" style="border-left-color:var(' + v + ')">' +
+          '<div class="roster-name"><span class="p-dot" style="background:var(' + v + ')"></span>' + escapeHtml(p.name) + '</div>' +
+          (p.role ? '<span class="roster-role">' + escapeHtml(p.role) + '</span>' : '') +
+          (facts ? '<div class="roster-facts">' + escapeHtml(facts) + '</div>' : '') +
+          (p.bio ? '<p class="roster-bio">' + escapeHtml(p.bio) + '</p>' : '') +
+          (p.quote ? '<p class="roster-quote">「' + escapeHtml(p.quote) + '」</p>' : '') +
+        '</div>';
+      }).join('');
+    }
+
+    if (m.premise) $('premiseText').textContent = m.premise;
+
+    const chips = [];
+    if (Array.isArray(m.candidates) && m.candidates.length) {
+      m.candidates.forEach(c => chips.push('<span class="ticker-chip"><span class="code">' + escapeHtml(c.code || '') +
+        '</span><span class="name">' + escapeHtml(c.name || '') + '</span></span>'));
+    } else {
+      const s = m.subject;
+      if (s) chips.push('<span class="ticker-chip"><span class="code">' + escapeHtml(s.code || '') + '</span><span class="name">' +
+        escapeHtml([s.name, s.note].filter(Boolean).join(' — ')) + '</span></span>');
+    }
+    if (m.entryPrice) chips.push('<span class="ticker-chip"><span class="code">取得単価 ' + fmtNum(m.entryPrice) + unit() +
+      (m.shares ? ' × ' + fmtNum(m.shares) + '株' : '') + '</span>' +
+      (m.decisionHorizon ? '<span class="name">判断期限 ' + escapeHtml(m.decisionHorizon) + '</span>' : '') + '</span>');
+    $('tickerRow').innerHTML = chips.join('');
+
+    $('cadenceNote').textContent = ['更新頻度: ' + (m.cadence || ''), m.targetCycles ? '目標' + m.targetCycles + 'サイクル' : '']
+      .filter(Boolean).join(' ・ ');
+
+    $('chartTitle').textContent = olLabel('base') + 'シナリオの推移（サイクルごとの結論）';
+    $('chartLegend').innerHTML =
+      '<span><i class="swatch" style="background:var(--bull)"></i>' + escapeHtml(olLabel('bull')) + '</span>' +
+      '<span><i class="swatch" style="background:var(--macro)"></i>' + escapeHtml(olLabel('base')) + '</span>' +
+      '<span><i class="swatch" style="background:var(--bear)"></i>' + escapeHtml(olLabel('bear')) + '</span>' +
+      (m.entryPrice ? '<span><i class="swatch line" style="background:var(--ink-muted)"></i>取得単価 ' + fmtNum(m.entryPrice) + unit() + '</span>' : '');
+
+    renderPill();
+  }
+
+  function renderPill() {
+    const n = cycles.length;
+    const t = meta && meta.targetCycles;
+    $('cyclePill').textContent = n > 0 ? 'CYCLE ' + n + (t ? ' / ' + t : '') : 'CYCLE 準備中';
+    $('cyclePill').className = 'pill ' + (t && n >= t ? 'done' : (n > 0 ? 'live' : ''));
+  }
+
+  // ---------- statements ----------
+  function stmtBlock(key, text) {
+    const p = team[key];
+    if (!p || !text) return '';
+    return '<div class="stmt" style="border-left-color:var(' + p.var + ')">' +
+      '<div class="stmt-label"><span class="p-dot" style="background:var(' + p.var + ')"></span>' + escapeHtml(p.label) + '</div>' +
+      '<div class="stmt-body">' + escapeHtml(text) + '</div></div>';
+  }
+
+  const VERDICT_COLOR = { '支持': 'var(--bull)', '否定': 'var(--bear)', '修正': 'var(--p-4)' };
+
+  function guestBlock(g) {
+    const body = g && (g.text || g.statement);
+    if (!body) return '';
+    const verdict = g.verdict ? '<span class="guest-verdict" style="color:' + (VERDICT_COLOR[g.verdict] || 'var(--ink-muted)') +
+      '">委員会の見立てを' + escapeHtml(g.verdict) + '</span>' : '';
+    const sources = Array.isArray(g.sources) && g.sources.length
+      ? '<ul class="guest-sources">' + g.sources.map(s => '<li>' + escapeHtml(s) + '</li>').join('') + '</ul>' : '';
+    return '<div class="guest"><div class="guest-head">' +
+        '<span class="guest-tag">外部招聘</span>' +
+        '<span class="guest-name">' + escapeHtml(g.name || '') + '</span>' +
+        '<span class="guest-title">' + escapeHtml(g.title || '') + '</span>' + verdict +
+      '</div>' +
+      (g.question ? '<div class="guest-question">招かれた問い: ' + escapeHtml(g.question) + '</div>' : '') +
+      '<div class="guest-body">' + escapeHtml(body) + '</div>' + sources + '</div>';
+  }
+
+  function roundBlock(r, total) {
+    const st = Array.isArray(r.statements) ? r.statements : [];
+    const watch = Array.isArray(r.watchItems) && r.watchItems.length
+      ? '<ul class="watch-items round-watch">' + r.watchItems.map(w => '<li>' + escapeHtml(w) + '</li>').join('') + '</ul>' : '';
+    return '<div class="round-card"><div class="round-card-head">' +
+        '<span class="round-no">ROUND ' + r.round + (total ? ' / ' + total : '') + '</span></div>' +
+      st.map(s => s.speaker === 'guest' ? guestBlock(s) : stmtBlock(s.speaker, s.text)).join('') +
+      watch + '</div>';
+  }
+
+  function cycleCard(c, isLatest) {
+    const con = c.conclusion || {};
+    const ol = con.outlook || {};
+    const stance = con.stance || '';
+    const label = con.stanceLabel || stanceLabels[stance] || stance;
+    const col = (cls, title, arr) => Array.isArray(arr) && arr.length
+      ? '<div class="conclusion-col ' + cls + '"><span class="conclusion-col-label">' + title + '</span><ul>' +
+        arr.map(x => '<li>' + escapeHtml(x) + '</li>').join('') + '</ul></div>' : '';
+    const outlookRow = OUTLOOK_KEYS.map(k => {
+      const o = ol[k];
+      if (!o) return '';
+      return '<div class="outlook-card ' + k + '"><span class="outlook-label">' + escapeHtml(olLabel(k)) + '</span>' +
+        '<span class="outlook-price">' + fmtNum(o.price) + unit() + '</span>' +
+        (o.rationale ? '<div class="outlook-rationale">' + escapeHtml(o.rationale) + '</div>' : '') + '</div>';
+    }).join('');
+    const watch = Array.isArray(con.nextWatch) && con.nextWatch.length
+      ? '<ul class="watch-items" style="margin-top:12px;">' + con.nextWatch.map(w => '<li>' + escapeHtml(w) + '</li>').join('') + '</ul>' : '';
+    const pct = v => (typeof v === 'number' ? (v > 0 ? '+' : '') + v + '%' : '—');
+    const span = h => h ? pct(h.bear) + ' 〜 ' + pct(h.bull) + '（<b>' + pct(h.base) + '</b>）' : '—';
+    const rankingHtml = Array.isArray(con.ranking) && con.ranking.length
+      ? '<div class="ranking">' + con.ranking.slice().sort((a, b) => a.rank - b.rank).map(x =>
+          '<div class="rank-row' + (x.rank === 1 ? ' r1' : '') + '">' +
+            '<div class="rank-head">' +
+              '<span class="rank-no">' + x.rank + '位</span>' +
+              '<span class="rank-name">' + escapeHtml(candidateName(x.key)) + '</span>' +
+              '<span class="rank-figs">26年末 ' + span(x.h2026) + ' ／ 27年末 ' + span(x.h2027) + '</span>' +
+            '</div>' +
+            (x.rationale ? '<div class="rank-why">' + escapeHtml(x.rationale) + '</div>' : '') +
+            (x.swingFactor ? '<div class="rank-swing"><b>順位が動く条件</b>' + escapeHtml(x.swingFactor) + '</div>' : '') +
+          '</div>').join('') + '</div>'
+      : '';
+    const rounds = (Array.isArray(c.rounds) ? c.rounds.slice().sort((a, b) => a.round - b.round) : []);
+    const total = meta && meta.targetRoundsPerCycle;
+    const roundsHtml = rounds.map(r => roundBlock(r, total)).join('');
+    return '<div class="cycle-card">' +
+      '<div class="cycle-head"><span class="cycle-no">サイクル ' + c.cycle + (isLatest ? '（最新）' : '') + '</span>' +
+        (c.stagnant ? '<span class="stagnant-flag">停滞検知 → 外部招聘</span>' : '') +
+        '<time>' + fmtDay(c.date) + '</time></div>' +
+      '<div class="conclusion"><div class="conclusion-top">' +
+          '<span class="stance-badge ' + escapeHtml(stance) + '">' + escapeHtml(label) + '</span>' +
+          '<span class="conclusion-verdict">' + escapeHtml(con.verdict || '') + '</span></div>' +
+        '<div class="outlook-row">' + outlookRow + '</div>' + rankingHtml +
+        '<div class="conclusion-cols">' + col('drivers', '上振れ材料', con.keyDrivers) + col('risks', 'リスク要因', con.risks) + '</div>' +
+        watch + '</div>' +
+      (isLatest ? '<div class="cycle-rounds">' + roundsHtml + '</div>'
+                : '<details><summary class="legacy-toggle">全ラウンドの詳細を見る</summary><div class="cycle-rounds">' + roundsHtml + '</div></details>') +
+      '</div>';
+  }
+
+  function renderCycles(list) {
+    cycles = list.slice().sort((a, b) => a.cycle - b.cycle);
+    renderPill();
+    if (!cycles.length) {
+      $('cycles').innerHTML = '';
+      $('cycles').appendChild($('cyclesEmpty'));
+    } else {
+      $('cycles').innerHTML = cycles.slice().reverse().map((c, i) => cycleCard(c, i === 0)).join('');
+    }
+    renderChart();
+  }
+
+  // ---------- chart ----------
+  function renderChart() {
+    const svg = $('outlookChart'), W = 680, H = 220, padL = 54, padR = 18, padT = 16, padB = 26;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const pts0 = cycles.filter(c => (c.conclusion || {}).outlook);
+    if (!pts0.length) { $('chartCurrent').textContent = 'データ待ち'; svg.innerHTML = ''; return; }
+
+    const entry = meta && meta.entryPrice;
+    let min = entry || Infinity, max = entry || -Infinity;
+    pts0.forEach(c => OUTLOOK_KEYS.forEach(k => {
+      const o = c.conclusion.outlook[k];
+      if (o && typeof o.price === 'number') { min = Math.min(min, o.price); max = Math.max(max, o.price); }
+    }));
+    min = Math.floor(min * 0.92 / 500) * 500;
+    max = Math.ceil(max * 1.08 / 500) * 500;
+    if (max <= min) max = min + 1000;
+    const y = v => padT + plotH - ((v - min) / (max - min)) * plotH;
+    const step = plotW / pts0.length;
+    const x = i => padL + step * i + step / 2;
+
+    let g = '';
+    for (let i = 0; i <= 4; i++) {
+      const v = min + (max - min) * (i / 4), yy = y(v);
+      g += '<line x1="' + padL + '" y1="' + yy + '" x2="' + (W - padR) + '" y2="' + yy + '" stroke="var(--border)" stroke-width="1" />' +
+        '<text class="axis-label" x="' + (padL - 8) + '" y="' + (yy + 3) + '" text-anchor="end">' + fmtNum(Math.round(v)) + '</text>';
+    }
+    if (entry) {
+      const ey = y(entry);
+      g += '<line x1="' + padL + '" y1="' + ey + '" x2="' + (W - padR) + '" y2="' + ey + '" stroke="var(--ink-muted)" stroke-width="1.5" stroke-dasharray="4,3" />' +
+        '<text class="axis-label" x="' + (W - padR) + '" y="' + (ey - 4) + '" text-anchor="end">取得単価</text>';
+    }
+    const showEvery = pts0.length > 12 ? 2 : 1;
+    pts0.forEach((c, i) => {
+      if (i % showEvery === 0) g += '<text class="axis-label" x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle">C' + c.cycle + '</text>';
+    });
+
+    const P = pts0.map((c, i) => {
+      const o = c.conclusion.outlook;
+      return { x: x(i), cycle: c, bull: o.bull && o.bull.price, base: o.base && o.base.price, bear: o.bear && o.bear.price };
+    });
+    let bars = '', line = '', dots = '', hits = '';
+    P.forEach((p, i) => {
+      if (p.bull != null && p.bear != null)
+        bars += '<line x1="' + p.x + '" y1="' + y(p.bear) + '" x2="' + p.x + '" y2="' + y(p.bull) + '" stroke="var(--border-strong)" stroke-width="4" stroke-linecap="round" />';
+      if (p.bull != null) dots += '<circle cx="' + p.x + '" cy="' + y(p.bull) + '" r="4" fill="var(--bull)" stroke="var(--surface)" stroke-width="1.5" />';
+      if (p.bear != null) dots += '<circle cx="' + p.x + '" cy="' + y(p.bear) + '" r="4" fill="var(--bear)" stroke="var(--surface)" stroke-width="1.5" />';
+      if (p.base != null) dots += '<circle cx="' + p.x + '" cy="' + y(p.base) + '" r="5" fill="var(--macro)" stroke="var(--surface)" stroke-width="1.5" />';
+      if (i && P[i - 1].base != null && p.base != null)
+        line += '<line x1="' + P[i - 1].x + '" y1="' + y(P[i - 1].base) + '" x2="' + p.x + '" y2="' + y(p.base) + '" stroke="var(--macro)" stroke-width="2" stroke-linecap="round" />';
+      hits += '<circle class="hit" data-i="' + i + '" cx="' + p.x + '" cy="' + (padT + plotH / 2) + '" r="16" fill="transparent" style="cursor:pointer" />';
+    });
+    svg.innerHTML = g + bars + line + dots + hits;
+
+    const last = pts0[pts0.length - 1], lc = last.conclusion;
+    $('chartCurrent').innerHTML = '最新: <strong>' + fmtNum(lc.outlook.base && lc.outlook.base.price) + unit() + '</strong>（' +
+      escapeHtml(lc.stanceLabel || stanceLabels[lc.stance] || '') + ' ・ サイクル ' + last.cycle + '）';
+
+    svg.querySelectorAll('.hit').forEach(h => {
+      h.addEventListener('mouseenter', e => showTip(e, P[+h.dataset.i]));
+      h.addEventListener('mousemove', posTip);
+      h.addEventListener('mouseleave', () => { $('chartTooltip').hidden = true; });
+    });
+  }
+  function showTip(e, p) {
+    const con = p.cycle.conclusion || {};
+    $('chartTooltip').innerHTML = '<span class="tt-round">サイクル ' + p.cycle.cycle + ' ・ ' + fmtDay(p.cycle.date) + ' ・ ' +
+        escapeHtml(con.stanceLabel || stanceLabels[con.stance] || '') + '</span>' +
+      OUTLOOK_KEYS.map(k => olLabel(k) + ' ' + fmtNum(p[k]) + unit()).join(' / ') +
+      '<br>' + escapeHtml((con.verdict || '').slice(0, 60)) + ((con.verdict || '').length > 60 ? '…' : '');
+    $('chartTooltip').hidden = false;
+    posTip(e);
+  }
+  function posTip(e) {
+    const w = $('outlookChart').closest('.chart-wrap').getBoundingClientRect();
+    $('chartTooltip').style.left = (e.clientX - w.left) + 'px';
+    $('chartTooltip').style.top = (e.clientY - w.top - 10) + 'px';
+  }
+
+  // ---------- self-audit log ----------
+  function renderAudit(entries) {
+    if (!Array.isArray(entries) || !entries.length) { $('auditWrap').hidden = true; return; }
+    $('auditWrap').hidden = false;
+    const f = (l, v) => v ? '<div class="audit-field"><b>' + l + '</b>' + escapeHtml(String(v)) + '</div>' : '';
+    $('auditList').innerHTML = entries.slice().sort((a, b) => b.cycle - a.cycle).map(e =>
+      '<div class="audit-row"><div class="audit-row-head">' +
+        '<span class="audit-cycle">サイクル ' + e.cycle + '</span>' +
+        (e.stagnant ? '<span class="stagnant-flag">停滞</span>' : '') +
+        (e.guestInvited ? '<span class="guest-tag">' + escapeHtml(e.guestInvited) + '</span>' : '') +
+      '</div>' + f('新規材料', e.newEvidence) + f('逸脱検知', e.driftDetected) +
+      (e.ruleAdded ? '<div class="audit-rule"><b style="font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;color:var(--macro);">自己修正</b> ' +
+        escapeHtml(String(e.ruleAdded)) + '</div>' : '') + '</div>').join('');
+  }
+
+  async function init() {
+    if (!window.claude || !window.claude.use) return;
+    const db = await window.claude.use('db');
+    if (!db) return;
+    db.doc('state/meta').onSnapshot(s => { if (s.exists) renderMeta(s.data()); }, () => {});
+    db.collection('cycles').orderBy('cycle', 'asc').onSnapshot(qs => renderCycles(qs.docs.map(d => d.data())), () => {});
+    db.doc('meta/audit').onSnapshot(s => renderAudit(s.exists ? (s.data().entries || []) : []), () => {});
+  }
+  init();
+})();
+</script>
