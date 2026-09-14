@@ -90,7 +90,7 @@
   "team": [
     {
       "key": "watanabe",
-      "name": "渡辺 康平",
+      "name": "watanabe",
       "role": "代表取締役CEO",
       "age": 50,
       "background": "慶應義塾大学卒",
@@ -100,7 +100,7 @@
     },
     {
       "key": "suda",
-      "name": "酢田 浩一",
+      "name": "suda",
       "role": "CFO",
       "age": 40,
       "background": "高卒（叩き上げ）",
@@ -110,7 +110,7 @@
     },
     {
       "key": "yoneda",
-      "name": "米田 拓也",
+      "name": "yoneda",
       "role": "チーフポートフォリオマネージャー",
       "age": 38,
       "background": "東京大学卒",
@@ -120,7 +120,7 @@
     },
     {
       "key": "ashiya",
-      "name": "芦屋 美月",
+      "name": "ashiya",
       "role": "ジュニアアナリスト",
       "age": 29,
       "background": "海外大学（LBS・MBA）卒",
@@ -130,7 +130,7 @@
     },
     {
       "key": "nishimura",
-      "name": "西村 隆",
+      "name": "nishimura",
       "role": "ベテラントレーダー",
       "age": 55,
       "background": "東洋大学卒",
