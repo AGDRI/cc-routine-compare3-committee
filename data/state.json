@@ -76,10 +76,10 @@
   "outlookNote": "outlook の値は『最有力銘柄の2027年末時点における、conclusion.baseline に記録した基準株価からの騰落率（%）』。3銘柄を同じ物差しで比べるため円建てではなく騰落率で表現する。bear はマイナスになってよい。基準株価と順位の判断基準は rules.md のR10に従って必ず記録すること。",
   "targetRoundsPerCycle": 5,
   "targetCycles": 20,
-  "currentCycle": 8,
+  "currentCycle": 9,
   "cadence": "2時間ごと",
   "createdAt": "2026-09-14T00:00:00Z",
-  "updatedAt": "2026-09-14T08:35:00Z",
+  "updatedAt": "2026-09-14T10:31:40Z",
   "team": [
     {
       "key": "watanabe",
