@@ -61,6 +61,31 @@
     {"date": "2026-09-10", "subject": "industry", "headline": "Vertiv、Utility Innovation Groupを最大26億ドルで買収", "summary": "データセンター設備企業がマイクログリッド・オンサイト電源へ垂直統合を進める動き。", "source": "https://sattu-ai-agent.com/2026/09/10/sep10-2wks-aidc/", "kind": "業界ニュース"}
   ],
 
+  "priceHistory": {
+    "note": "**委員会が9サイクルにわたって一度も扱っていない事実。** 現値からの騰落率だけを見ていると、その現値自体がどこから来たのかが見えない。以下は3独立ソース（Yahoo!ファイナンス・日経電子版・Google Finance）で確認済み。rules.md R11 の priceFeed と同じく、委員会自身の調査より優先すること。",
+    "asOf": "2026-09-15T08:20+09:00",
+    "pillar": {
+      "current": 8940,
+      "yearHigh": {"price": 12080, "date": "2026-08-07", "note": "10年来高値"},
+      "yearLow": {"price": 4760, "date": "2026年内"},
+      "yearOpen": {"price": 4865, "date": "2026年初"},
+      "prevYearClose": 4795,
+      "drawdownFromHigh": "-26.0%（12,080円 → 8,940円、約5週間）",
+      "ytdFromOpen": "+83.8%（4,865円 → 8,940円）",
+      "observedCloses": [
+        {"date": "2026-05-15", "close": 10070}, {"date": "2026-08-14", "close": 10180},
+        {"date": "2026-08-17", "close": 10480}, {"date": "2026-08-20", "close": 10040},
+        {"date": "2026-08-28", "close": 9970}, {"date": "2026-09-07", "close": 9830},
+        {"date": "2026-09-14", "close": 8940}
+      ],
+      "afterHours": {"price": 8720, "changePct": -2.46, "asOf": "2026-09-14T22:36+09:00", "market": "夜間PTS"},
+      "splitOrReverseSplit": "2025〜2026年に分割・併合は見つからなかった（年またぎの株価に不連続なジャンプがないことからも可能性は低い）。ただしTDnetへの直接アクセスができていないため断定はできない。",
+      "source": "https://www.nikkei.com/nkd/company/history/yprice/?scode=6490 / https://finance.yahoo.co.jp/quote/6490.T / https://www.google.com/finance/quote/6490:TYO",
+      "whyThisMatters": "PILLARは2026年初4,865円から8月7日に12,080円（10年来高値）まで約2.5倍になり、そこから5週間で8,940円まで26%下落した。**委員会はcycle-1〜11を通じて一度もこの事実に触れていない。** 『PILLARには次の投資カードがない』『材料が乏しい』という評価を重ねてきたが、株価の推移が示しているのは材料の不在ではなく、急騰後の調整である可能性がある。8月7日の高値に戻るだけで現値から+35%になる。これを上値の根拠にせよという意味ではない。**どちらの解釈が正しいかを検証せよという意味である。**"
+    },
+    "todo": "日東紡とメックについても同じ水準の株価履歴（年初来高値・安値・現値のドローダウン）を次回フィード更新時に収集すること。3社を同じ物差しで比べるには、3社とも同じ情報が要る。"
+  },
+
   "factCorrections": {
     "note": "設置者が cycle-9 の議論を読んで発見した事実誤認。priceFeed と同様、ここに書かれた数字を委員会自身の調査より優先すること（rules.md R17）。**訂正された事実に基づいて、該当する評価をやり直すこと。** ただし結論を指定しているわけではない。事実を正した上で、どう評価するかは委員会が決めること。",
     "corrections": [
