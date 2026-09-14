@@ -1,0 +1,53 @@
+{
+  "collectedAt": "2026-09-14T21:05:00+09:00",
+  "collectedBy": "sync-loop (interactive session)",
+  "coversSince": "2026-09-07",
+  "forCycle": 9,
+  "note": "前サイクル以降に現実世界で起きたこと。クラウド実行側は多くの情報源に egress proxy で届かないため、ここに書かれた事実を最優先で使うこと（rules.md R15）。確認できなかった項目は null にしてある。null を推測で埋めないこと。",
+
+  "quotes": {
+    "asOf": "2026-09-14T15:30+09:00",
+    "source": "Yahoo!ファイナンス（出来高・値幅）/ Google Finance（30日平均出来高）",
+    "nittobo": {"close": 2851, "prevClose": 2835, "changePct": 0.56, "dayLow": 2689, "dayHigh": 2910, "dayRangePct": 8.2, "volume": 5386700, "avgVolume30d": 6670000, "volumeVsAvg": 0.81},
+    "pillar":  {"close": 8940, "prevClose": 9040, "changePct": -1.11, "dayLow": 8650, "dayHigh": 8960, "dayRangePct": 3.6, "volume": 67100, "avgVolume30d": 141720, "volumeVsAvg": 0.47},
+    "mec":     {"close": 6040, "prevClose": 6020, "changePct": 0.33, "dayLow": 5750, "dayHigh": 6050, "dayRangePct": 5.2, "volume": 333900, "avgVolume30d": 440730, "volumeVsAvg": 0.76},
+    "observation": "3銘柄とも出来高が30日平均を下回った（日東紡0.81倍・メック0.76倍・PILLAR0.47倍）。特にPILLARは平均の半分以下で商いが薄い。一方で日中の値幅は日東紡8.2%と大きく、薄商いの中で振れている状態。この解釈は委員会が行うこと。"
+  },
+
+  "macro": {
+    "sox": {"value": 11823.998, "changePct": 1.80, "asOf": "2026-09-11", "source": "https://www.nikkei.com/marketdata/quote/SOX/", "note": "9月14日時点では米国市場が未だ開いていないため、直近確定値は9月11日終値。週間騰落率の公式値は確認できなかった。"},
+    "dram": {"trend": "まちまち", "asOf": "2026-09-14", "source": "https://www.trendforce.com/price/dram/dram_spot",
+             "detail": {"ddr5_16gb": {"price": 54.333, "changePct": 0.0}, "ddr4_16gb": {"price": 89.25, "changePct": -0.56}, "ddr4_8gb": {"price": 45.571, "changePct": 0.79}},
+             "note": "品目により方向が分かれる。報道ベースではDRAM契約価格はAIサーバー需要で堅調、NANDは価格上昇ペースが鈍化との論調。"},
+    "usdjpy": {"value": 154.74, "asOf": "2026-09-14T21:04+09:00", "source": "https://fx.minkabu.jp/pair/USDJPY"},
+    "nikkei": {"event": "2026-09-11に日経平均が-1,259円の大幅下落", "cause": "米金利上昇・景気減速懸念による市場全体の調整との報道", "confirmed": false, "note": "出典URLを特定できなかったため参考情報扱い。委員会はこれを確定事実として扱わないこと。"}
+  },
+
+  "disclosures": {
+    "note": "TDnet / Yahoo!ファイナンス開示ページを個別に確認した結果",
+    "nittobo": {"newSince": null, "lastDisclosure": "2026-08-05"},
+    "pillar":  {"newSince": null, "lastDisclosure": "2026-08-31"},
+    "mec":     {"newSince": "2026-09-08", "lastDisclosure": "2026-09-08", "title": "スポンサードリサーチレポート発行のお知らせ", "detail": "本文の内容は未確認"}
+  },
+
+  "news": [
+    {"date": "2026-09-08", "subject": "mec", "headline": "スポンサードリサーチレポート発行のお知らせ", "summary": "メックに関するスポンサードリサーチレポートが発行されたとの適時開示。内容詳細は未確認。", "source": "https://finance.yahoo.co.jp/quote/4971.T/disclosure", "kind": "適時開示"},
+    {"date": "2026-09-08", "subject": "nittobo", "headline": "レーティング日報【最上位を継続】", "summary": "日東紡績のアナリスト格付けが最上位評価を継続との市況コラム。IRではない。", "source": "https://s.kabutan.jp/stocks/3110/news/", "kind": "市況記事"},
+    {"date": "2026-09-11", "subject": "nittobo", "headline": "前日に動いた銘柄 part2（日東紡績が言及）", "summary": "値動き銘柄まとめの中で言及された市況記事。", "source": "https://s.kabutan.jp/stocks/3110/news/", "kind": "市況記事"},
+    {"date": "2026-09-10", "subject": "industry", "headline": "STマイクロ、2027年AIデータセンター売上の約8割が光通信向け半導体との見通し", "summary": "AIデータセンター需要の中で光通信用半導体の重要性が高まっているとの報道。", "source": "https://sattu-ai-agent.com/2026/09/10/sep10-2wks-aidc/", "kind": "業界ニュース"},
+    {"date": "2026-09-10", "subject": "industry", "headline": "Amazon・Qualcomm、最大600億ドル規模のAI半導体・光接続提携", "summary": "データセンター向けAI推論カスタム半導体と最大1.6Tbps光接続技術を含む長期提携。", "source": "https://sattu-ai-agent.com/2026/09/10/sep10-2wks-aidc/", "kind": "業界ニュース"},
+    {"date": "2026-09-10", "subject": "industry", "headline": "Vertiv、Utility Innovation Groupを最大26億ドルで買収", "summary": "データセンター設備企業がマイクログリッド・オンサイト電源へ垂直統合を進める動き。", "source": "https://sattu-ai-agent.com/2026/09/10/sep10-2wks-aidc/", "kind": "業界ニュース"}
+  ],
+
+  "notFound": [
+    "PILLAR の2026年9月7日以降の新規ニュース・IR（探したが存在しなかった）",
+    "日東紡績の2026年9月7日以降の新規適時開示（直近は8月5日）",
+    "SOX指数の公式な週間騰落率",
+    "日経平均 -1,259円 の一次情報URL"
+  ],
+
+  "rejected": [
+    {"claim": "日東紡が9月12日終値5,860円、前日比+470円", "reason": "WebSearchの要約に現れたが、Yahoo!ファイナンスから直接取得した実データ（2,851円）と大きく矛盾する。別時期のデータが混入した検索要約の誤りと判断し不採用とした。", "lesson": "検索結果の要約に現れた株価は、一次情報で裏を取るまで使わないこと。"},
+    {"claim": "ドル円 154.5915（Google Finance）", "reason": "表示日時が2024年9月14日となっており矛盾していたため不採用。minkabu の154.74を採用。"}
+  ]
+}
