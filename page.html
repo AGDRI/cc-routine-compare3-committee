@@ -139,6 +139,15 @@
   .rank-why { font-size: 12.5px; color: var(--ink-secondary); margin-top: 5px; }
   .rank-swing { font-size: 11.5px; color: var(--ink-muted); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); }
   .rank-swing b { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .05em; text-transform: uppercase; margin-right: 5px; }
+  .rank-badges { display: inline-flex; gap: 5px; }
+  .rank-badge { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .04em; padding: 2px 6px; border-radius: 2px; border: 1px solid var(--border-strong); color: var(--ink-secondary); }
+  .rank-badge.top { border-color: var(--bull); color: var(--bull); }
+  .rank-incr { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-secondary); margin-top: 5px; }
+  .rank-incr b { color: var(--ink); }
+  .rank-incr.thin { color: var(--bear); }
+  .basis { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 10px 13px; margin: 4px 0 12px; font-size: 12px; color: var(--ink-secondary); }
+  .basis b { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-muted); margin-right: 6px; }
+  .basis-prices { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink); margin-top: 4px; }
   .conclusion-verdict { font-size: 15px; font-weight: 600; color: var(--ink); flex: 1; min-width: 200px; }
   .outlook-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 4px 0 14px; }
   .outlook-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid transparent; border-radius: 4px; padding: 10px 12px; }
@@ -416,14 +425,37 @@
       ? '<ul class="watch-items" style="margin-top:12px;">' + con.nextWatch.map(w => '<li>' + escapeHtml(w) + '</li>').join('') + '</ul>' : '';
     const pct = v => (typeof v === 'number' ? (v > 0 ? '+' : '') + v + '%' : '—');
     const span = h => h ? pct(h.bear) + ' 〜 ' + pct(h.bull) + '（<b>' + pct(h.base) + '</b>）' : '—';
+    const bl = con.baseline;
+    const baselineHtml = bl
+      ? '<div class="basis"><b>騰落率の基準</b>' + escapeHtml(bl.asOf || '') + ' 時点' +
+          (bl.source ? '（' + escapeHtml(bl.source) + '）' : '') +
+          (bl.note ? ' — ' + escapeHtml(bl.note) : '') +
+          (bl.prices ? '<div class="basis-prices">' + Object.keys(bl.prices).map(k =>
+              escapeHtml(candidateName(k)) + ' ' + fmtNum(bl.prices[k]) + '円').join('　/　') + '</div>' : '') +
+        '</div>'
+      : '';
+    const basisHtml = con.rankingBasis
+      ? '<div class="basis"><b>順位の判断基準</b>' + escapeHtml(con.rankingBasis) + '</div>' : '';
+    const rankBadges = x => {
+      const b = [];
+      if (x.rank2026) b.push('<span class="rank-badge' + (x.rank2026 === 1 ? ' top' : '') + '">26年末 ' + x.rank2026 + '位</span>');
+      if (x.rank2027) b.push('<span class="rank-badge' + (x.rank2027 === 1 ? ' top' : '') + '">27年末 ' + x.rank2027 + '位</span>');
+      return b.length ? '<span class="rank-badges">' + b.join('') + '</span>' : '';
+    };
+    const incrHtml = x => typeof x.incr2027 === 'number'
+      ? '<div class="rank-incr' + (x.incr2027 < 10 ? ' thin' : '') + '">26年末→27年末の増分 <b>' + pct(x.incr2027) + '</b>' +
+        (x.incr2027 < 10 ? '（2年目の伸びが薄い — 織り込み完了か調査不足か要検証）' : '') + '</div>'
+      : '';
     const rankingHtml = Array.isArray(con.ranking) && con.ranking.length
-      ? '<div class="ranking">' + con.ranking.slice().sort((a, b) => a.rank - b.rank).map(x =>
+      ? baselineHtml + basisHtml + '<div class="ranking">' + con.ranking.slice().sort((a, b) => a.rank - b.rank).map(x =>
           '<div class="rank-row' + (x.rank === 1 ? ' r1' : '') + '">' +
             '<div class="rank-head">' +
               '<span class="rank-no">' + x.rank + '位</span>' +
               '<span class="rank-name">' + escapeHtml(candidateName(x.key)) + '</span>' +
+              rankBadges(x) +
               '<span class="rank-figs">26年末 ' + span(x.h2026) + ' ／ 27年末 ' + span(x.h2027) + '</span>' +
             '</div>' +
+            incrHtml(x) +
             (x.rationale ? '<div class="rank-why">' + escapeHtml(x.rationale) + '</div>' : '') +
             (x.swingFactor ? '<div class="rank-swing"><b>順位が動く条件</b>' + escapeHtml(x.swingFactor) + '</div>' : '') +
           '</div>').join('') + '</div>'
