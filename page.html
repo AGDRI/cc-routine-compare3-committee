@@ -1,4 +1,4 @@
-<title>合議制委員会</title>
+<title>3銘柄比較委員会</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
   :root {
@@ -340,7 +340,7 @@
     $('cadenceNote').textContent = ['更新頻度: ' + (m.cadence || ''), m.targetCycles ? '目標' + m.targetCycles + 'サイクル' : '']
       .filter(Boolean).join(' ・ ');
 
-    $('chartTitle').textContent = olLabel('base') + 'シナリオの推移（サイクルごとの結論）';
+    $('chartTitle').textContent = '最有力銘柄の2027年末騰落率シナリオの推移（サイクルごとの結論）';
     $('chartLegend').innerHTML =
       '<span><i class="swatch" style="background:var(--bull)"></i>' + escapeHtml(olLabel('bull')) + '</span>' +
       '<span><i class="swatch" style="background:var(--macro)"></i>' + escapeHtml(olLabel('base')) + '</span>' +
@@ -348,6 +348,9 @@
       (m.entryPrice ? '<span><i class="swatch line" style="background:var(--ink-muted)"></i>取得単価 ' + fmtNum(m.entryPrice) + unit() + '</span>' : '');
 
     renderPill();
+    // team は meta から組み立てるため、cycles が先に届くと委員の発言が空になる。
+    // meta が届いた時点で既読のサイクルを描き直す。
+    if (cycles.length) renderCycles(cycles);
   }
 
   function renderPill() {
