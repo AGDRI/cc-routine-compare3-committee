@@ -132,6 +132,18 @@ rules.md の R1 に従う。委員会内部の知識だけでは決着がつか�
 - rules.md の R5 に従い `data/meta/audit.json` に1件追記。問題を検知したら `data/rules.md` に次のR番号でルールを追記し `ruleAdded` に記録
 - `data/state.json` の `currentCycle` を N+1 に、`updatedAt` を現在時刻に（**theme / mode / premise / scope / subject / candidates / decisionHorizon / horizons / horizonNote / targetCycles / targetRoundsPerCycle / team / stances / priceFeed は絶対に変更しない**）
 
+### 6b. 保存したら機械検査を通す（必須）
+
+`data/cycles/cycle-{N}.json` を書いたら、**commit の前に必ず**次を実行すること:
+
+```
+python3 tools_validate_cycle.py {N}
+```
+
+- **FAIL が1つでもあれば commit してはならない。** 該当箇所を直して再実行し、FAIL がゼロになるまで繰り返す。FAIL は形式違反（字数超過・算術の不一致・必須フィールドの欠落・全員発言の不成立）であり、判断ではなく修正で解消できる。
+- **WARN は commit を止めないが、`data/meta/audit.json` の `driftDetected` に転記すること。** WARN は人が判断すべき兆候（古い株価の混入、切り下げの根拠不足、全員一致の疑い）であり、隠してはならない。
+- 検査を省略して commit した場合、設置者側の同期ループが同じ検査を走らせて検出する。省略は必ず露見する。
+
 ### 7. push する
 
 git add し、`cycle {N}: {stanceLabel} / 27年末base {値}%` で commit、`git pull --rebase origin main` してから main に push。
