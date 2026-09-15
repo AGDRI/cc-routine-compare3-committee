@@ -12,5 +12,6 @@
   {"cycle": 11, "date": "2026-09-14", "stance": "mec", "base": 10},
   {"cycle": 12, "date": "2026-09-15", "stance": "mec", "base": 20},
   {"cycle": 13, "date": "2026-09-15", "stance": "pillar", "base": 12},
-  {"cycle": 14, "date": "2026-09-15", "stance": "mec", "base": 15}
+  {"cycle": 14, "date": "2026-09-15", "stance": "mec", "base": 15},
+  {"cycle": 15, "date": "2026-09-15", "stance": "pillar", "base": 18}
 ]
