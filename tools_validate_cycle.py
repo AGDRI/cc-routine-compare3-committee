@@ -181,7 +181,7 @@ def main(n, as_json=False):
             t = x.get('text', '') or ''
             hit_pos = set()
             for k, tok in dnu:
-                for m in re.finditer(re.escape(tok), t):
+                for m in re.finditer(r'(?<![\d,])' + re.escape(tok), t):   # 「6,110円」の中の「110円」に反応しない
                     if any(abs(m.start() - q) <= 2 for q in hit_pos):
                         break
                     hit_pos.add(m.start())
