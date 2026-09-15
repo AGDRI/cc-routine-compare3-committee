@@ -8,8 +8,8 @@ agents/ を唯一の正とし、state.json の team はここから機械的に�
 import json, re, sys, collections, io, os
 
 REPO = os.path.dirname(os.path.abspath(__file__))
-ROSTER = ['watanabe', 'suda', 'yoneda', 'ashiya', 'nishimura']  # team[0] が議長役
-FIELDS = ['name', 'role', 'age', 'background', 'mbti', 'bio', 'quote']
+ROSTER = ['watanabe', 'suda', 'yoneda', 'ashiya', 'nishimura', 'takanashi']  # team[0] が議長役
+FIELDS = ['displayName', 'role', 'age', 'background', 'mbti', 'bio', 'quote', 'bias', 'falsifier']
 
 
 def frontmatter(path):
@@ -37,7 +37,7 @@ def main():
         if missing:
             raise SystemExit('%s.md の frontmatter に不足: %s' % (key, missing))
         for f in FIELDS:
-            member[f] = int(fm[f]) if f == 'age' else fm[f]
+            member['name' if f == 'displayName' else f] = int(fm[f]) if f == 'age' else fm[f]
         team.append(member)
 
     p = REPO + '/data/state.json'
