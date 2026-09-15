@@ -323,6 +323,18 @@
     const d = new Date(iso + 'T00:00:00');
     return isNaN(d.getTime()) ? iso : d.toLocaleDateString('ja-JP', { month: '2-digit', day: '2-digit', weekday: 'short' });
   }
+  // generatedAt（UTC ISO8601）を JST の「MM/DD(曜) HH:MM」に。date しか無い古いサイクルは日付だけ返す。
+  function fmtStamp(c) {
+    // committedAt（同期時に git のコミット時刻から埋める）を最優先。generatedAt は委員会の自己申告で信用できない値があった。
+    const src = c && (c.committedAt || c.generatedAt);
+    if (src) {
+      const d = new Date(src);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', month: '2-digit', day: '2-digit', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false }) + ' JST';
+      }
+    }
+    return fmtDay(c && c.date);
+  }
 
   // ---------- header / roster / premise, all driven by state/meta ----------
   function renderMeta(m) {
@@ -534,7 +546,7 @@
     return '<div class="cycle-card">' +
       '<div class="cycle-head"><span class="cycle-no">サイクル ' + c.cycle + (isLatest ? '（最新）' : '') + '</span>' +
         (c.stagnant ? '<span class="stagnant-flag">停滞検知 → 外部招聘</span>' : '') +
-        '<time>' + fmtDay(c.date) + '</time></div>' +
+        '<time datetime="' + escapeHtml(c.committedAt || c.generatedAt || c.date || '') + '">' + fmtStamp(c) + '</time></div>' +
       '<div class="conclusion"><div class="conclusion-top">' +
           '<span class="stance-badge ' + escapeHtml(stance) + (label.length <= 20 ? ' short' : '') + '">' + escapeHtml(label) + '</span>' +
           '<span class="conclusion-verdict">' + escapeHtml(con.verdict || '') + '</span></div>' +
