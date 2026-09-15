@@ -1,37 +1,37 @@
 {
-  "collectedAt": "2026-09-15T10:25:00+09:00",
+  "collectedAt": "2026-09-15T14:30:00+09:00",
   "collectedBy": "sync-loop (interactive session)",
   "coversSince": "2026-09-07",
-  "forCycle": 12,
+  "forCycle": 15,
   "note": "前サイクル以降に現実世界で起きたこと。クラウド実行側は多くの情報源に egress proxy で届かないため、ここに書かれた事実を最優先で使うこと（R15）。**このフィードの quotes は 2026-09-15 の場中値、disclosures/news/macro は 9/14 時点のもの。**確認できなかった項目は null。null を推測で埋めないこと。",
   "quotes": {
-    "asOf": "2026-09-15T10:23+09:00（場中）",
+    "asOf": "2026-09-15T14:27+09:00（場中・大引け前）",
     "source": "Yahoo!ファイナンス",
     "nittobo": {
-      "price": 2925,
+      "price": 2887,
       "prevClose": 2851,
-      "changePct": 2.6,
+      "changePct": 1.26,
       "dayLow": 2794,
-      "dayHigh": 2940,
-      "volume": 1499300
+      "dayHigh": 2989,
+      "volume": 3709700
     },
     "pillar": {
-      "price": 9050,
+      "price": 8980,
       "prevClose": 8940,
-      "changePct": 1.23,
+      "changePct": 0.45,
       "dayLow": 8800,
-      "dayHigh": 9060,
-      "volume": 13100
+      "dayHigh": 9090,
+      "volume": 41700
     },
     "mec": {
-      "price": 6090,
+      "price": 6060,
       "prevClose": 6040,
-      "changePct": 0.83,
+      "changePct": 0.33,
       "dayLow": 5970,
-      "dayHigh": 6110,
-      "volume": 71300
+      "dayHigh": 6140,
+      "volume": 166100
     },
-    "observation": "9/15前場、3銘柄とも上昇。日東紡が+2.60%で最も強い。PILLARは8,800円まで下押しした後9,060円まで戻しており、9/14の夜間PTS8,720円からは反発している。ただし**出来高はまだ場中の途中までの値**なので、前日比較には使えない。解釈は委員会が行うこと。"
+    "observation": "9/15 14:27時点。日東紡は高値2,989円（+4.8%）まで買われた後2,887円へ押し戻された（値幅6.8%）。出来高370.9万株は前日の5,386,700株ペースを下回る。PILLARの出来高41,700株は前日67,100株より薄いまま。メックは166,100株。3銘柄とも前日比は小幅プラス。解釈は委員会が行うこと。"
   },
   "macro": {
     "sox": {
